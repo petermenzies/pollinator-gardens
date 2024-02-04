@@ -1,10 +1,10 @@
 # shiny ui
 
 dashboardPage(
-  dashboardHeader(title = "Certified Pollinator Gardens",
+  dashboardHeader(title = "Pollinator Habitats",
                   tags$li(
                     class = "dropdown",
-                    actionBttn(
+                    shinyWidgets::actionBttn(
                       inputId = "refresh",
                       label = "Restart App",
                       icon = icon("refresh"),
@@ -35,18 +35,30 @@ dashboardPage(
       tags$link(rel = "stylesheet", type = "text/css", href = "style.css")
     ),
     
-    # main menu items
-    tabItems(# SHAPE VIEWER --------------------------------------------------------
+    # menu items
+    tabItems(# MAP --------------------------------------------------------
              tabItem(tabName = "map",
                      
                      fluidRow(
-                       div(class = "col-sm-12 col-md-12 col-lg-8",
-                           
+                       column(width = 3,
+                              box(
+                                width = "100%",
+                                selectInput(
+                                  "map_marker",
+                                  "Garden marker type:",
+                                  c("Tier", "Simple")
+                                )
+                              )
+                       ),
+                       
+                       div(class = "col-sm-12 col-md-12 col-lg-9",
                            box(
                              width = "100%",
                              leafletOutput("map") |>
                                withSpinner(type = 8)
                            ))
-                     )))
+                     )
+             )
+    )
   )
 )
