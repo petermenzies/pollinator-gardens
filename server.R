@@ -35,31 +35,12 @@ shinyServer(function(input, output, session) {
     
     startingIconFormat <- 
       makeIcon(
-        iconUrl = paste0("www/images/", points$tier, ".png"),
-        iconWidth = case_when(
-          points$tier == "Butterfly" ~ 25,
-          points$tier == "Chrysalis" ~ 17,
-          points$tier == "Caterpillar" ~ 25,
-          points$tier == "Egg" ~ 25
-        ),
-        iconHeight = case_when(
-          points$tier == "Butterfly" ~ 20,
-          points$tier == "Chrysalis" ~ 20,
-          points$tier == "Caterpillar" ~ 25,
-          points$tier == "Egg" ~ 15
-        )
+        iconUrl = "www/images/location_dot.png",
+        iconWidth = 14,
+        iconHeight = 17
       )
     
-    htmlLegend <- 
-      "<div style='line-height: 2;'>
-       <img src='images/butterfly.png' style='width:20px; height:15px;'> Butterfly
-       <br/>
-       <img src='images/chrysalis.png' style='width:15px;height:20px;'> Chrysalis
-       <br/>
-       <img src='images/caterpillar.png' style='width:20px;height:15px;'> Caterpillar
-       <br/>
-       <img src='images/egg.png' style='width:20px;height:13px;'> Egg
-       </div>"
+    startingHtmlLegend <- "<img src='images/location_dot.png' style='width:17px; height:20px;'> Garden"
     
     # render map
     leaflet(points) |>
@@ -79,6 +60,11 @@ shinyServer(function(input, output, session) {
         )
       ) |> 
       addControl(pointsDisplayed, position = "topright") |> 
+      addControl(
+        layerId = "legend",
+        html = startingHtmlLegend,
+        position = "bottomleft"
+      ) |> 
       addLayersControl(
         baseGroups = c("Street", "Satellite"),
         options = layersControlOptions(collapsed = TRUE)
@@ -86,40 +72,30 @@ shinyServer(function(input, output, session) {
   })
   
   # update symbology using proxy
-  observe({
+  observeEvent(input$map_marker, {
     
     points <- points()
     
-    iconFormat <-
-      if (input$map_marker == "Tier") {
-        
+    if (input$map_marker == "Tier") {
+      
+      iconFormat <-
         makeIcon(
           iconUrl = paste0("www/images/", str_to_lower(points$tier), ".png"),
           iconWidth = case_when(
-            points$tier == "Butterfly" ~ 25,
-            points$tier == "Chrysalis" ~ 17,
+            points$tier == "Butterfly" ~ 20,
+            points$tier == "Chrysalis" ~ 15,
             points$tier == "Caterpillar" ~ 25,
-            points$tier == "Egg" ~ 25
+            points$tier == "Egg" ~ 20
           ),
           iconHeight = case_when(
-            points$tier == "Butterfly" ~ 20,
-            points$tier == "Chrysalis" ~ 20,
+            points$tier == "Butterfly" ~ 15,
+            points$tier == "Chrysalis" ~ 17,
             points$tier == "Caterpillar" ~ 25,
-            points$tier == "Egg" ~ 15
+            points$tier == "Egg" ~ 12
           )
         )
-      } else if (input$map_marker == "Simple") {
-        
-        makeIcon(
-          iconUrl = "www/images/location_dot.png",
-          iconWidth = 17,
-          iconHeight = 20
-        )
-      }
-    
-    htmlLegend <- 
-      if (input$map_marker == "Tier") {
-        
+      
+      htmlLegend <- 
         "<div style='line-height: 2;'>
          <img src='images/butterfly.png' style='width:20px; height:15px;'> Butterfly
          <br/>
@@ -129,11 +105,22 @@ shinyServer(function(input, output, session) {
          <br/>
          <img src='images/egg.png' style='width:20px;height:13px;'> Egg
          </div>"
-        
-      } else if (input$map_marker == "Simple") {
-        
-        "<img src='images/location_dot.png' style='width:17px; height:20px;'> Garden"
-      }
+      
+      opacity <- 1
+      
+    } else if (input$map_marker == "Simple") {
+      
+      iconFormat <-
+        makeIcon(
+          iconUrl = "www/images/location_dot.png",
+          iconWidth = 14,
+          iconHeight = 17
+        )
+      
+      htmlLegend <- "<img src='images/location_dot.png' style='width:17px; height:20px;'> Garden"
+      
+      opacity <- 0.6
+    }
     
     leafletProxy("map", data = points) |> 
       clearMarkers() |> 
@@ -144,7 +131,8 @@ shinyServer(function(input, output, session) {
           points$tier,
           "</b><br>",
           points$address
-        )
+        ),
+        options = markerOptions(opacity = opacity)
       ) |> 
       removeControl("legend") |> 
       addControl(

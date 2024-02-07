@@ -40,23 +40,25 @@ dashboardPage(
              tabItem(tabName = "map",
                      
                      fluidRow(
-                       column(width = 3,
+                       # column(width = 2,
+                       div(class = "col-sm-3 col-md-3 col-lg-2",
                               box(
                                 width = "100%",
                                 selectInput(
                                   "map_marker",
                                   "Garden marker type:",
-                                  c("Tier", "Simple")
+                                  c("Simple", "Tier")
                                 )
                               )
                        ),
                        
-                       div(class = "col-sm-12 col-md-12 col-lg-9",
+                       div(class = "col-sm-12 col-md-12 col-lg-10",
                            box(
                              width = "100%",
                              leafletOutput("map") |>
                                withSpinner(type = 8)
-                           ))
+                           )
+                       )
                      )
              )
     )

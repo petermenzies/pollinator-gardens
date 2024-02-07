@@ -4,25 +4,28 @@ library(sf)
 
 addresses <- read_csv("data/addresses.csv")
 
-addressesWithoutCoords <- addresses |> 
-  filter(is.na(latitude)) |> 
-  select(-c(latitude, longitude))
+addresses$address <- paste(addresses$`Garden Street Address`, addresses$`Garden City, State, Zip Code`, sep = " ")
 
-geocodedAdresses <- addressesWithoutCoords |> 
+geocoded_addresses <- addresses |> 
   geocode(
     address,
-    method = 'osm',
+    method = 'arcgis',
     lat = latitude,
     long = longitude
   )
 
-allGeocodedAddreses <- addresses |> 
-  rows_update(geocodedAdresses)
+geocoded_addresses <- geocoded_addresses |> 
+  select(
+    address,
+    latitude,
+    longitude,
+    tier = `Which garden tier are you applying for?`
+  )
 
-points <- st_as_sf(
-  allGeocodedAddreses,
-  coords = c("longitude", "latitude"),
-  crs = 4326
+points <- geocoded_addresses |> 
+  st_as_sf(
+    coords = c("longitude", "latitude"),
+    crs = 4326
   )
 
 write_rds(points, "data/temp/points.RDS")

@@ -1,0 +1,10 @@
+name: pollinator-gardens
+title:
+username: petermenzies
+account: petermenzies
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 11126269
+bundleId: 8218111
+url: https://petermenzies.shinyapps.io/pollinator-gardens/
+version: 1
