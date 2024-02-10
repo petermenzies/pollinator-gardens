@@ -5,6 +5,6 @@ account: petermenzies
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 11126269
-bundleId: 8218111
+bundleId: 8228270
 url: https://petermenzies.shinyapps.io/pollinator-gardens/
 version: 1

@@ -20,6 +20,21 @@ dashboardPage(
                        "Map",
                        tabName = "map",
                        icon = icon("map", verify_fa = F)
+                     ),
+                     menuItem(
+                       "Settings",
+                       tabName = "settings",
+                       icon = icon("gear"),
+                       menuSubItem(
+                         shinyWidgets::actionBttn(
+                           inputId = "update",
+                           label = "Updates Addresses",
+                           icon = icon("database"),
+                           style = "simple",
+                           size = "sm"
+                         ),
+                         icon = NULL
+                       )
                      )
                    )),
   
@@ -36,31 +51,27 @@ dashboardPage(
     ),
     
     # menu items
-    tabItems(# MAP --------------------------------------------------------
-             tabItem(tabName = "map",
-                     
-                     fluidRow(
-                       # column(width = 2,
-                       div(class = "col-sm-3 col-md-3 col-lg-2",
-                              box(
-                                width = "100%",
-                                selectInput(
-                                  "map_marker",
+    tabItems(
+      # MAP --------------------------------------------------------
+      tabItem(tabName = "map",
+              
+              fluidRow(
+                # column(width = 2,
+                div(class = "col-sm-3 col-md-3 col-lg-2",
+                    box(
+                      width = "100%",
+                      selectInput("map_marker",
                                   "Garden marker type:",
-                                  c("Simple", "Tier")
-                                )
-                              )
-                       ),
-                       
-                       div(class = "col-sm-12 col-md-12 col-lg-10",
-                           box(
-                             width = "100%",
-                             leafletOutput("map") |>
-                               withSpinner(type = 8)
-                           )
-                       )
-                     )
-             )
+                                  c("Simple", "Tier"))
+                    )),
+                
+                div(class = "col-sm-12 col-md-12 col-lg-10",
+                    box(
+                      width = "100%",
+                      leafletOutput("map") |>
+                        withSpinner(type = 8)
+                    ))
+              ))
     )
   )
 )

@@ -22,7 +22,7 @@ shinyServer(function(input, output, session) {
   })
   
   
-  # Shape viewer -------------------------------------------------
+  # Map -------------------------------------------------
   
   output$map <- renderLeaflet({
     points <- points()
@@ -140,5 +140,47 @@ shinyServer(function(input, output, session) {
         html = htmlLegend,
         position = "bottomleft"
       )
+  })
+  
+  # Data Update -----------------------------------------
+  
+  observeEvent(
+    input$update, {
+      source("R/check_for_updates.R")
+      updates <- check_for_updates()
+
+      if (updates == FALSE) {
+        showModal(modalDialog(
+          renderText("Do you still want to update? Fetching and geocoding new data will take a couple of minutes"),
+          title="No new addreses found",
+          footer = tagList(actionButton("update_addresses_confirm", "Updates Addresses"),
+                           modalButton("Cancel")
+          )
+        ))
+
+      } else {
+        
+        showModal(modalDialog(
+          renderText("Fetching and geocoding new data will take a couple of minutes"),
+          title="New addresses found!",
+          footer = tagList(actionButton("update_addresses_confirm", "Updates Addresses"),
+                           modalButton("Cancel")
+          )
+        ))
+      }
+    }
+  )
+  
+  observeEvent(input$update_addresses_confirm, { 
+    removeModal()
+    withProgress(
+      {
+        source("R/process_addresses.R")
+        process_addresses(addresses)
+        incProgress(1/10, message = "reloading app")
+        
+        session$reload()
+      }
+    )
   })
 })
